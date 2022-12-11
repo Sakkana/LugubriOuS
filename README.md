@@ -1,6 +1,6 @@
-# myOS
-
-
+# LugubriOuS
+A 32-bit operating system written in 80x86 and C.
+---
 
 ### 通用寄存器
 
