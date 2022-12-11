@@ -1,0 +1,24 @@
+{
+    // 设置成false会在“输出”中输出，无法输入
+    "code-runner.runInTerminal": true, 
+        // 右键run code时运行的命令；未注释的仅适用于PowerShell（Win10默认）和pwsh，文件名中有空格也可以编译运行；注释掉的适用于cmd（win7默认）、PS和bash，但文件名中有空格时无法运行
+        "code-runner.executorMap": {
+            // --- 原始 ---
+            // "asm-intel-x86-generic" : "nasm E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\src\\boot\\$fileName -o E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\bin\\$fileNameWithoutExt.bin; dd if=E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\bin\\$fileNameWithoutExt.bin of=E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\img\\myOS.img bs=512 count=1 seek=2 conv=notrunc; bochsdbg.exe -f E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\config\\myOS.bxrc -q"
+            
+            // MBR 编译+刷写
+            // "asm-intel-x86-generic" : "nasm -I E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\src\\boot\\include\\ -o E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\bin\\$fileNameWithoutExt.bin E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\src\\boot\\$fileName; dd if=E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\bin\\$fileNameWithoutExt.bin of=E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\img\\myOS.img bs=512 count=1 conv=notrunc"
+
+            // loader 编译+刷写
+            "asm-intel-x86-generic" : "nasm -I E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\src\\boot\\include\\ -o E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\bin\\$fileNameWithoutExt.bin E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\src\\boot\\$fileName; dd if=E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\bin\\$fileNameWithoutExt.bin of=E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\img\\myOS.img bs=512 count=2 seek=2 conv=notrunc;"
+            
+            // 启动
+            // "asm-intel-x86-generic" : "bochsdbg.exe -f E:\\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\config\\myOS.bxrc -q"
+        
+        },
+        "code-runner.saveFileBeforeRun": true, // run code前保存
+        "code-runner.preserveFocus": true,     // 若为false，run code后光标会聚焦到终端上。如果需要频繁输入数据可设为false
+        "code-runner.clearPreviousOutput": false, // 每次run code前清空属于code runner的终端消息，默认false
+        "code-runner.ignoreSelection": true,   // 默认为false，效果是鼠标选中一块代码后可以单独执行，但C是编译型语言，不适合这样用
+        "code-runner.fileDirectoryAsCwd": true, // 将code runner终端的工作目录切换到文件目录再运行，对依赖cwd的程序产生影响；如果为false，executorMap要加cd $dir
+    }

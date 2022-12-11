@@ -1,0 +1,25 @@
+# 1. Bochs 运行过程内存
+megs:32
+
+# 2, 真实机器的 BIOS 和 VGA BIOS
+romimage:file=E:\homwwork\DevelopTools\env\Bochs-2.4.5\BIOS-bochs-latest
+vgaromimage:file=E:\homwwork\DevelopTools\env\Bochs-2.4.5\VGABIOS-lgpl-latest
+
+# 3. Boches 所使用的磁盘
+floppy_bootsig_check: disabled=0
+
+# 4. 启动盘符 （从硬盘启动）
+boot: disk
+
+# 5. 日志文件输出
+log:E:\homwwork\DevelopTools\env\Project\src\myOS\log\log.txt
+
+# 6. 关闭鼠标，打开键盘
+mouse:enabled=0
+keyboard_mapping:enabled=1, map="E:\homwwork\DevelopTools\env\Bochs-2.4.5\keymaps\x11-pc-us.map"
+
+# 7. 硬盘设置
+ata0: enabled=1, ioaddr1=0x1f0, ioaddr2=0x3f0, irq=14
+ata0-master: type=disk, path="E:\homwwork\\DevelopTools\\env\\Project\\src\\myOS\\img\\myOS.img", mode=flat, cylinders=121, heads=16, spt=63
+
+
