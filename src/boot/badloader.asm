@@ -182,14 +182,5 @@ p_mode_start:
     mov gs, ax
     
     mov byte [gs:320], 'H'
-    mov byte [gs:320+1], 0xA4
-    mov byte [gs:320+2], 'e'
-    mov byte [gs:320+3], 0xA4
-    mov byte [gs:320+4], 'l'
-    mov byte [gs:320+5], 0xA4
-    mov byte [gs:320+6], 'l'
-    mov byte [gs:320+7], 0xA4
-    mov byte [gs:320+8], 'o'
-    mov byte [gs:320+9], 0xA4
     
     jmp $

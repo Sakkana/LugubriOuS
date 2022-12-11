@@ -1,7 +1,7 @@
 %include "boot.inc"
 SECTION loader vstart=LOADER_BASE_ADDR
-LOADER_STACK_TOP equ LOADER_BASE_ADDR 		   ;是个程序都需要有栈区 我设置的0x600以下的区域到0x500区域都是可用空间 况且也用不到
-jmp loader_start                     		   	   ;下面存放数据段 构建gdt 跳跃到下面的代码区 
+LOADER_STACK_TOP equ LOADER_BASE_ADDR 		           ;是个程序都需要有栈区 我设置的0x600以下的区域到0x500区域都是可用空间 况且也用不到
+jmp loader_start                     		   	       ;下面存放数据段 构建gdt 跳跃到下面的代码区 
 
 
     GDT_BASE:           dd 0x00000000          		   ;刚开始的段选择子0不能使用 故用两个双字 来填充
@@ -16,20 +16,19 @@ jmp loader_start                     		   	   ;下面存放数据段 构建gdt �
     VIDEO_DESC:         dd 0x80000007         		   ;0xB8000 到0xBFFFF为文字模式显示内存 B只能在boot.inc中出现定义了 此处不够空间了 8000刚好够
                         dd DESC_VIDEO_HIGH4     	   ;0x0007 (bFFFF-b8000)/4k = 0x7
                  
-    GDT_SIZE             equ $ - GDT_BASE               ;当前位置减去GDT_BASE的地址 等于GDT的大小
-    GDT_LIMIT       	 equ GDT_SIZE - 1   	           ;SIZE - 1即为最大偏移量
+    GDT_SIZE             equ $ - GDT_BASE              ;当前位置减去GDT_BASE的地址 等于GDT的大小
+    GDT_LIMIT       	 equ GDT_SIZE - 1   	       ;SIZE - 1即为最大偏移量
     
-    times 59 dq 0                             	   ;预留59个 define double四字型 8字描述符
-    times 5 db 0                                         ;为了凑整数 0x800 导致前面少了三个
+    times 59 dq 0                             	       ;预留59个 define double四字型 8字描述符
+    times 5 db 0                                       ;为了凑整数 0x800 导致前面少了三个
     
     total_mem_bytes  dd 0
     
-    gdt_ptr           dw GDT_LIMIT			   ;gdt指针 2字gdt界限放在前面 4字gdt地址放在后面 lgdt 48位格式 低位16位界限 高位32位起始地址
+    gdt_ptr           dw GDT_LIMIT			           ;gdt指针 2字gdt界限放在前面 4字gdt地址放在后面 lgdt 48位格式 低位16位界限 高位32位起始地址
     		          dd GDT_BASE
     		       
-    ards_buf times 244 db 0                              ;buf  记录内存大小的缓冲区
-    ards_nr dw 0					   ;nr 记录20字节结构体个数  计算了一下 4+2+4+244+2=256 刚好256字节
-    							   ;书籍作者有强迫症 哈哈 这里244的buf用不到那么多的 实属强迫症使然 哈哈
+    ards_buf times 244 db 0                             ;buf  记录内存大小的缓冲区
+    ards_nr dw 0					                    ;nr 记录20字节结构体个数  计算了一下 4+2+4+244+2=256 刚好256字节
     
     SELECTOR_CODE        equ (0X0001<<3) + TI_GDT + RPL0    ;16位寄存器 4位TI RPL状态 GDT剩下的选择子
     SELECTOR_DATA	     equ (0X0002<<3) + TI_GDT + RPL0
@@ -44,19 +43,19 @@ loader_start:
     mov di,ards_buf                                           ;di指向缓冲区位置
 
     .e820_mem_get_loop:
-        mov eax,0x0000E820                                            ;每次都需要初始化
+        mov eax,0x0000E820                                    ;每次都需要初始化
         mov ecx,0x14
         mov edx,0x534d4150
         
-        int 0x15                                                  ;调用了0x15中断
-        jc  .e820_failed_so_try_e801                              ;这时候回去看了看jc跳转条件 就是CF位=1 carry flag = 1 中途失败了即跳转
+        int 0x15                                               ;调用了0x15中断
+        jc  .e820_failed_so_try_e801                           ;这时候回去看了看jc跳转条件 就是CF位=1 carry flag = 1 中途失败了即跳转
         
-        add di,cx							                       ;把di的数值增加20 为了下一次作准备
+        add di,cx							                   ;把di的数值增加20 为了下一次作准备
         inc word [ards_nr]
         cmp ebx,0
-        jne .e820_mem_get_loop                                    ;直至读取完全结束 则进入下面的处理时间
+        jne .e820_mem_get_loop                                  ;直至读取完全结束 则进入下面的处理时间
         
-        mov cx,[ards_nr]                                          ;反正也就是5 cx足以
+        mov cx,[ards_nr]                                        ;反正也就是5 cx足以
         mov ebx,ards_buf
         xor edx,edx
 
@@ -132,14 +131,14 @@ loader_start:
  
  [bits 32]
  p_mode_start: 
-    mov ax,SELECTOR_DATA
-    mov ds,ax
-    mov es,ax
-    mov ss,ax
-    mov esp,LOADER_STACK_TOP
-    mov ax,SELECTOR_VIDEO
-    mov gs,ax
+    mov ax, SELECTOR_DATA
+    mov ds, ax
+    mov es, ax
+    mov ss, ax
+    mov esp, LOADER_STACK_TOP
+    mov ax, SELECTOR_VIDEO
+    mov gs, ax
     
-    mov byte [gs:160],'P'
-    
+    mov byte [gs:160],'X'
+
     jmp $

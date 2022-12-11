@@ -23,20 +23,14 @@ SECTION MBR vstart=0x7c00 ;起始地址编译在0x7c00
     ;调用BIOS中断
     int 10h
 
-    mov byte [gs:0x00], '1'
-    mov byte [gs:0x01], 0x24
+    mov byte [gs:0x00], 'M'
+    mov byte [gs:0x01], 0xa4
 
-    mov byte [gs:0x02], ' '
-    mov byte [gs:0x03], 0xA4
+    mov byte [gs:0x02], 'B'
+    mov byte [gs:0x03], 0xa4
 
-    mov byte [gs:0x04], 'M'
-    mov byte [gs:0x05], 0xA4
-
-    mov byte [gs:0x06], 'B'
-    mov byte [gs:0x07], 0xA4
-
-    mov byte [gs:0x08], 'R'
-    mov byte [gs:0x09], 0xA4
+    mov byte [gs:0x04], 'R'
+    mov byte [gs:0x05], 0xa4
 
     ; 模拟手动传参
     mov eax, LOADER_START_SECTOR    ; 起始扇区 lba 地址
