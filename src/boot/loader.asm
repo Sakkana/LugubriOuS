@@ -143,6 +143,11 @@ loader_start:
 
 ; --- 加载内核到缓冲区 ---
 
+    mov eax, KERNEL_START_SECTOR    ; kernel 所在的扇区号
+    mov ebx, KERNEL_BIN_BASE_ADDR   ; kernel 在内存中的布局
+    mov ecx, 200                    ; 直接读 200 个扇区。200 x 512 byte
+
+    call rd_disk_m_32
 
 ; --- 启动分页 ---
     call setup_page
@@ -169,7 +174,14 @@ loader_start:
     mov gs,eax
     mov byte [gs:320],'V'
 
-    jmp $
+    ; jmp $       ; 跳到内核
+    jmp SELECTOR_CODE: boot_kernel
+
+
+boot_kernel:
+    call init_kernel
+    mov esp, 0xc009f00
+    jmp KERNEL_ENTER_POINT
 
 ; --- 创建页表 ---
 setup_page:
@@ -225,4 +237,151 @@ setup_page:
     add eax,0x1000
     loop .create_kernel_pde 
     
+    ret
+
+
+
+; -- 初始化内核 ---
+init_kernel:
+    ; 寄存器全部清零
+    xor eax, eax
+    xor ebx, ebx    ; 记录程序头表地址
+    xor ecx, ecx    ; 程序头表中的 entry 数量
+    xor edx, edx    ; 程序头的尺寸，即 e_phentsize
+
+    ;这里稍微解释一下 因为0x70000 为 64kb * 7 = 448kb 而我们的内核映射区域是 4MB 而在虚拟地址4MB以内的都可以当作1:1映射
+    mov ebx,[KERNEL_BIN_BASE_ADDR+28]                           ; elf offset 28，程序头表的量
+    add ebx,KERNEL_BIN_BASE_ADDR                               ;ebx当前位置为程序段表
+    mov dx,[KERNEL_BIN_BASE_ADDR+42]		                 ;获取程序段表每个条目描述符字节大小
+    mov cx,[KERNEL_BIN_BASE_ADDR+44]                         ;一共有几个段
+    
+     
+ .get_each_segment:
+    cmp dword [ebx+0], PT_NULL                                  ; 这里没有程序段，可以忽略，定义在 Phdr (program header) 中
+    je .PTNULL                                                 ;空即跳转即可 不进行mem_cpy
+    
+    mov eax,[ebx+8]
+    cmp eax,0xc0001500
+    jb .PTNULL
+    
+        
+    push dword [ebx+16]                                        ;ebx+16在存储的数是filesz  可以翻到Loader刚开始
+                                                               
+    mov eax,[ebx+4]                                            
+    add eax,KERNEL_BIN_BASE_ADDR
+    push eax                                                   ;p_offset 在文件中的偏移位置    源位置         
+    push dword [ebx+8]                                         ;目标位置
+     
+    call mem_cpy
+    add esp,12                                                 ;把三个参数把栈扔出去 等于恢复栈指针
+    
+ .PTNULL:
+    add  ebx,edx                                               ;edx是一个描述符字节大小
+    loop .get_each_segment                                     ;继续进行外层循环    
+    ret
+                                        
+mem_cpy:
+    cld                                                        ;向高地址自动加数字 cld std 向低地址自动移动
+    push ebp                                                   ;保存ebp 因为访问的时候通过ebp 良好的编程习惯保存相关寄存器
+    mov  ebp,esp 
+    push ecx                                                   ;外层循环还要用 必须保存 外层eax存储着还有几个段
+    
+                                                               ;分析一下为什么是 8 因为进入的时候又重新push了ebp 所以相对应的都需要+4
+                                                               ;并且进入函数时 还Push了函数返回地址 所以就那么多了
+    mov edi,[ebp+8]                                            ;目的指针 edi存储的是目的位置 4+4
+    mov esi,[ebp+12]                                           ;源指针   源位置             8+4
+    mov ecx,[ebp+16]                                           ;与Movsb好兄弟 互相搭配      12+4
+    
+    
+    rep movsb                                                  ;一个一个字节复制
+       
+    pop ecx 
+    pop ebp
+    ret
+
+
+
+rd_disk_m_32:
+    ; ---
+    ; 读取磁盘 n 个扇区
+    ; ---
+    ; eax = lba 扇区号
+    ; bx = 数据要写入的内存地址
+    ; cx = 读入的扇区数
+
+    ; 备份
+    mov esi, eax
+    mov di, cx
+
+    ; ---
+    ; 1. 设置要读取的扇区数
+    ; ---
+
+    mov dx, 0x1f2   ; sector count 寄存器
+    mov al, cl      ; 待读入扇区数写入 ax
+    out dx, al      ; 读取的扇区数
+
+    mov eax, esi    ; 恢复 ax
+
+    ; ---
+    ; 2. 将 LBA 地址存入 0x1f3 ~ 0x1f6
+    ; ---
+
+    ; LBA 地址 7~0 位写入端口 0x1f3
+    mov dx, 0x1f3   ; LBA low 寄存器
+    out dx, al
+
+    ; LBA 地址 15~8 位写入端口 0x1f4
+    mov cl, 8
+    shr eax, cl
+    mov dx, 0x1f4   ; LBA mid 寄存器
+    out dx, al
+
+    ; LBA 地址 23~16 位写入端口 0x1f5
+    shr eax, cl
+    mov dx, 0x1f5   ; LBA high 寄存器
+    out dx, al
+
+    ; LBA 地址 27~24 位写入端口 0x1f6
+    shr eax, cl
+
+    and al, 0x0f
+    or al, 0xe0     ; 7~4 位为 1110，表示 lba 模式
+    mov dx, 0x1f6   ; device 寄存器
+    out dx, al
+
+; ---
+; 3. 向 0x1f7 端口写入读命令:0x20
+; ---
+
+    mov dx, 0x1f7   ; Status 寄存器
+    mov al, 0x20    ; read sector 命令
+    out dx, al
+
+; ---
+; 4. 检测硬盘状态
+; ---
+
+.not_ready:
+    nop
+    in al, dx
+    and al, 0x88    ; 第三位=1表示硬盘控制器准备好数据传输，第七位=1表示硬盘繁忙
+    cmp al, 0x08
+    jnz .not_ready  ; 若没有准备好，继续等待
+
+; ---
+; 5. 从端口 0x1f0 读取数据
+; ---
+
+    mov ax, di      ; ax = 要读取的扇区数
+    mov dx, 256
+    mul dx
+    mov cx, ax
+    mov dx, 0x1f0
+
+.go_on_read:
+    in ax, dx
+    mov [ebx], ax
+    add ebx, 2
+    loop .go_on_read
     ret

@@ -21,7 +21,7 @@ MBR 	= 	bin\\mbr.bin
 LOADER 	= 	bin\\loader.bin
 KERNEL 	= 	bin\\kernel.bin
 
-TARGET 	= img\\myOS.img
+TARGET 	= img\\new.img
 CONFIG 	= config\\myOS.bxrc
 INCLUDE = src\\boot\\include\\
 BUILD 	= bin\mbr.bin bin\loader.bin

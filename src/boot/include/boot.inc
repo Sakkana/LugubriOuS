@@ -74,3 +74,11 @@ PG_RW_P     equ 00b
 PG_RW_W     equ 10b
 PG_US_S     equ 000b
 PG_US_U     equ 100b
+
+
+; -- 内核相关数据 --
+KERNEL_START_SECTOR     equ     0x9         ; 第九个扇区中读取内核
+KERNEL_BIN_BASE_ADDR    equ     0x70000     ; 内核在内存中的起始地址
+KERNEL_ENTER_POINT      equ     0xc0001500  ; 内核起始虚拟地址
+
+PT_NULL equ 0
