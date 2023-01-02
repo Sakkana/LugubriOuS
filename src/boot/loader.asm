@@ -1,37 +1,40 @@
 %include "boot.inc"
 SECTION loader vstart=LOADER_BASE_ADDR
-LOADER_STACK_TOP equ LOADER_BASE_ADDR 		           ;是个程序都需要有栈区 我设置的0x600以下的区域到0x500区域都是可用空间 况且也用不到
-jmp loader_start                     		   	       ;下面存放数据段 构建gdt 跳跃到下面的代码区 
-
-
-    GDT_BASE:           dd 0x00000000          		   ;刚开始的段选择子0不能使用 故用两个双字 来填充
-   		                dd 0x00000000 
+LOADER_STACK_TOP equ LOADER_BASE_ADDR 		   ;是个程序都需要有栈区 我设置的0x600以下的区域到0x500区域都是可用空间 况且也用不到
+jmp loader_start                     		   	   ;下面存放数据段 构建gdt 跳跃到下面的代码区 
+				       		   ;对汇编再复习 db define byte,dw define word,dd define dword
+    GDT_BASE        : dd 0x00000000          		   ;刚开始的段选择子0不能使用 故用两个双字 来填充
+   		       dd 0x00000000 
     
-    CODE_DESC:          dd 0x0000FFFF         		   ;FFFF是与其他的几部分相连接 形成0XFFFFF段界限
-    		            dd DESC_CODE_HIGH4
+    CODE_DESC       : dd 0x0000FFFF         		   ;FFFF是与其他的几部分相连接 形成0XFFFFF段界限
+    		       dd DESC_CODE_HIGH4
     
-    DATA_STACK_DESC:    dd 0x0000FFFF
-  		                dd DESC_DATA_HIGH4
+    DATA_STACK_DESC : dd 0x0000FFFF
+  		       dd DESC_DATA_HIGH4
     		       
-    VIDEO_DESC:         dd 0x80000007         		   ;0xB8000 到0xBFFFF为文字模式显示内存 B只能在boot.inc中出现定义了 此处不够空间了 8000刚好够
-                        dd DESC_VIDEO_HIGH4     	   ;0x0007 (bFFFF-b8000)/4k = 0x7
+    VIDEO_DESC      : dd 0x80000007         		   ;0xB8000 到0xBFFFF为文字模式显示内存 B只能在boot.inc中出现定义了 此处不够空间了 8000刚好够
+                      dd DESC_VIDEO_HIGH4     	   ;0x0007 (bFFFF-b8000)/4k = 0x7
                  
-    GDT_SIZE             equ $ - GDT_BASE              ;当前位置减去GDT_BASE的地址 等于GDT的大小
-    GDT_LIMIT       	 equ GDT_SIZE - 1   	       ;SIZE - 1即为最大偏移量
+    GDT_SIZE              equ $ - GDT_BASE               ;当前位置减去GDT_BASE的地址 等于GDT的大小
+    GDT_LIMIT       	   equ GDT_SIZE - 1   	           ;SIZE - 1即为最大偏移量
     
-    times 59 dq 0                             	       ;预留59个 define double四字型 8字描述符
-    times 5 db 0                                       ;为了凑整数 0x800 导致前面少了三个
+    times 59 dq 0                             	   ;预留59个 define double四字型 8字描述符
+    times 5 db 0                                         ;为了凑整数 0x800 导致前面少了三个
     
     total_mem_bytes  dd 0
+    	               			           ;在此前经过计算程序内偏移量为0x200 我算了算 60*8+4*8=512 刚好是 0x200 说这里的之后还会用到
+    							   ;我们刚开始程序设置的地址位置为 0x600 那这就是0x800
+ 
     
-    gdt_ptr           dw GDT_LIMIT			           ;gdt指针 2字gdt界限放在前面 4字gdt地址放在后面 lgdt 48位格式 低位16位界限 高位32位起始地址
-    		          dd GDT_BASE
+    gdt_ptr           dw GDT_LIMIT			   ;gdt指针 2字gdt界限放在前面 4字gdt地址放在后面 lgdt 48位格式 低位16位界限 高位32位起始地址
+    		       dd GDT_BASE
     		       
-    ards_buf times 244 db 0                             ;buf  记录内存大小的缓冲区
-    ards_nr dw 0					                    ;nr 记录20字节结构体个数  计算了一下 4+2+4+244+2=256 刚好256字节
+    ards_buf times 244 db 0                              ;buf  记录内存大小的缓冲区
+    ards_nr dw 0					   ;nr 记录20字节结构体个数  计算了一下 4+2+4+244+2=256 刚好256字节
+    							   ;书籍作者有强迫症 哈哈 这里244的buf用不到那么多的 实属强迫症使然 哈哈
     
     SELECTOR_CODE        equ (0X0001<<3) + TI_GDT + RPL0    ;16位寄存器 4位TI RPL状态 GDT剩下的选择子
-    SELECTOR_DATA	     equ (0X0002<<3) + TI_GDT + RPL0
+    SELECTOR_DATA	  equ (0X0002<<3) + TI_GDT + RPL0
     SELECTOR_VIDEO       equ (0X0003<<3) + TI_GDT + RPL0   
     
 loader_start:
@@ -41,115 +44,110 @@ loader_start:
     mov ax,0                                       
     mov es,ax                                                 ;心有不安 还是把es给初始化一下
     mov di,ards_buf                                           ;di指向缓冲区位置
-
-    .e820_mem_get_loop:
-        mov eax,0x0000E820                                    ;每次都需要初始化
-        mov ecx,0x14
-        mov edx,0x534d4150
-        
-        int 0x15                                               ;调用了0x15中断
-        jc  .e820_failed_so_try_e801                           ;这时候回去看了看jc跳转条件 就是CF位=1 carry flag = 1 中途失败了即跳转
-        
-        add di,cx							                   ;把di的数值增加20 为了下一次作准备
-        inc word [ards_nr]
-        cmp ebx,0
-        jne .e820_mem_get_loop                                  ;直至读取完全结束 则进入下面的处理时间
-        
-        mov cx,[ards_nr]                                        ;反正也就是5 cx足以
-        mov ebx,ards_buf
-        xor edx,edx
-
-    .find_max_mem_area:
-        mov eax,[ebx]						 ;我也不是很清楚为什么用内存上限来表示操作系统可用部分
-        add eax,[ebx+8]                                            ;既然作者这样用了 我们就这样用
-        add ebx,20    						 ;简单的排序
-        cmp edx,eax
-        jge .next_ards
-        mov edx,eax
-
-    .next_ards:
-        loop .find_max_mem_area
-        jmp .mem_get_ok
-        
-    .e820_failed_so_try_e801:                                       ;地址段名字取的真的简单易懂 哈哈哈哈 
-        mov ax,0xe801
-        
-        int 0x15
-        jc .e801_failed_so_try_88
+.e820_mem_get_loop:
+    mov eax,0x0000E820                                            ;每次都需要初始化
+    mov ecx,0x14
+    mov edx,0x534d4150
     
-        ;1 先算出来低15MB的内存    
-        mov cx,0x400
-        mul cx                                                      ;低位放在ax 高位放在了dx
-        shl edx,16                                                  ;dx把低位的16位以上的书往上面抬 变成正常的数
-        and eax,0x0000FFFF                                          ;把除了16位以下的 16位以上的数清零 防止影响
-        or edx,eax                                                  ;15MB以下的数 暂时放到了edx中
-        add edx,0x100000                                            ;加了1MB 内存空缺 
-        mov esi,edx
-        
-        ;2 接着算16MB以上的内存 字节为单位
-        xor eax,eax
-        mov ax,bx
-        mov ecx,0x10000                                              ;0x10000为64KB  64*1024  
-        mul ecx                                                      ;高32位为0 因为低32位即有4GB 故只用加eax
-        mov edx,esi
-        add edx,eax
-        jmp .mem_get_ok
+    int 0x15                                                  ;调用了0x15中断
+    jc  .e820_failed_so_try_e801                              ;这时候回去看了看jc跳转条件 就是CF位=1 carry flag = 1 中途失败了即跳转
+    add di,cx							;把di的数值增加20 为了下一次作准备
+    inc word [ards_nr]
+    cmp ebx,0
+    jne .e820_mem_get_loop                                    ;直至读取完全结束 则进入下面的处理时间
     
-    .e801_failed_so_try_88:
-        mov ah,0x88
-        
-        int 0x15
-        jc .error_hlt
-        
-        and eax,0x0000FFFF
-        mov cx,0x400                                                 ;1024
-        mul cx
-        shl edx,16
-        or edx,eax 
-        add edx,0x100000
+    mov cx,[ards_nr]                                          ;反正也就是5 cx足以
+    mov ebx,ards_buf
+    xor edx,edx
+.find_max_mem_area:
+    
+    mov eax,[ebx]						 ;我也不是很清楚为什么用内存上限来表示操作系统可用部分
+    add eax,[ebx+8]                                            ;既然作者这样用了 我们就这样用
+    add ebx,20    						 ;简单的排序
+    cmp edx,eax
+    jge .next_ards
+    mov edx,eax
 
-    .error_hlt:
-        jmp $
+.next_ards:
+    loop .find_max_mem_area
+    jmp .mem_get_ok
+    
+.e820_failed_so_try_e801:                                       ;地址段名字取的真的简单易懂 哈哈哈哈 
+    mov ax,0xe801
+    int 0x15
+    jc .e801_failed_so_try_88
+   
+;1 先算出来低15MB的内存    
+    mov cx,0x400
+    mul cx                                                      ;低位放在ax 高位放在了dx
+    shl edx,16                                                  ;dx把低位的16位以上的书往上面抬 变成正常的数
+    and eax,0x0000FFFF                                          ;把除了16位以下的 16位以上的数清零 防止影响
+    or edx,eax                                                  ;15MB以下的数 暂时放到了edx中
+    add edx,0x100000                                            ;加了1MB 内存空缺 
+    mov esi,edx
+    
+;2 接着算16MB以上的内存 字节为单位
+    xor eax,eax
+    mov ax,bx
+    mov ecx,0x10000                                              ;0x10000为64KB  64*1024  
+    mul ecx                                                      ;高32位为0 因为低32位即有4GB 故只用加eax
+    mov edx,esi
+    add edx,eax
+    jmp .mem_get_ok
+ 
+.e801_failed_so_try_88:
+     mov ah,0x88
+     int 0x15
+     jc .error_hlt
+     and eax,0x0000FFFF
+     mov cx,0x400                                                 ;1024
+     mul cx
+     shl edx,16
+     or edx,eax 
+     add edx,0x100000
 
-    .mem_get_ok:
-        mov [total_mem_bytes],edx
-
-
-; --- 进入保护模式 ---
+.error_hlt:
+     jmp $
+.mem_get_ok:
+     mov [total_mem_bytes],edx
+; --------------------------------- 设置进入保护模式 -----------------------------
+; 1 打开A20 gate
+; 2 加载gdt
+; 3 将cr0 的 pe位置1
     
     in al,0x92                 ;端口号0x92 中 第1位变成1即可
     or al,0000_0010b
     out 0x92,al
+   
     
     lgdt [gdt_ptr]
+    
     
     mov eax,cr0                ;cr0寄存器第0位设置位1
     or  eax,0x00000001              
     mov cr0,eax
       
-    jmp dword SELECTOR_CODE:p_mode_start
+;-------------------------------- 已经打开保护模式 ---------------------------------------
+    jmp dword SELECTOR_CODE:p_mode_start                       ;刷新流水线
  
  [bits 32]
  p_mode_start: 
-    mov ax, SELECTOR_DATA
-    mov ds, ax
-    mov es, ax
-    mov ss, ax
-    mov esp, LOADER_STACK_TOP
-    mov ax, SELECTOR_VIDEO
-    mov gs, ax
+    mov ax,SELECTOR_DATA
+    mov ds,ax
+    mov es,ax
+    mov ss,ax
+    mov esp,LOADER_STACK_TOP
     
-    mov byte [gs:160],'X'
+;------------------------------- 加载内核到缓冲区 -------------------------------------------------
 
-; --- 加载内核到缓冲区 ---
-
-    mov eax, KERNEL_START_SECTOR    ; kernel 所在的扇区号
-    mov ebx, KERNEL_BIN_BASE_ADDR   ; kernel 在内存中的布局
-    mov ecx, 200                    ; 直接读 200 个扇区。200 x 512 byte
-
+    mov eax, KERNEL_BIN_SECTOR
+    mov ebx, KERNEL_BIN_BASE_ADDR
+    
+    mov ecx,200
     call rd_disk_m_32
 
-; --- 启动分页 ---
+;------------------------------- 启动分页 ---------------------------------------------------
+    
     call setup_page
     							         ;这里我再把gdtr的格式写一下 0-15位界限 16-47位起始地址
     sgdt [gdt_ptr]                                             ;将gdt寄存器中的指 还是放到gdt_ptr内存中 我们修改相对应的 段描述符
@@ -163,7 +161,6 @@ loader_start:
     mov eax,PAGE_DIR_TABLE_POS
     mov cr3,eax
     
-    ; 修改 cr0 寄存器最高位，启用分页
     mov eax,cr0
     or eax,0x80000000
     mov cr0,eax
@@ -172,18 +169,18 @@ loader_start:
     
     mov eax,SELECTOR_VIDEO
     mov gs,eax
-    mov byte [gs:320],'V'
+    mov byte [gs:160],'V'
+    
+    jmp SELECTOR_CODE:enter_kernel
+    
+;------------------------------ 跳转到内核区    
 
-    ; jmp $       ; 跳到内核
-    jmp SELECTOR_CODE: boot_kernel
+enter_kernel:
+    call kernel_init					          ;根据我们的1M以下的内存分布区 综合考虑出的数据
+    mov  esp, 0xc009f000
+    jmp  KERNEL_ENTER_ADDR
 
-
-boot_kernel:
-    call init_kernel
-    mov esp, 0xc009f00
-    jmp KERNEL_ENTER_POINT
-
-; --- 创建页表 ---
+;------------------------------- 创建页表 ------------------------------------------------    
 setup_page:
     mov ecx,0x1000                                             ;循环4096次 将页目录项清空 内存清0
     mov esi,0                                                   
@@ -237,27 +234,26 @@ setup_page:
     add eax,0x1000
     loop .create_kernel_pde 
     
-    ret
-
-
-
-; -- 初始化内核 ---
-init_kernel:
-    ; 寄存器全部清零
-    xor eax, eax
-    xor ebx, ebx    ; 记录程序头表地址
-    xor ecx, ecx    ; 程序头表中的 entry 数量
-    xor edx, edx    ; 程序头的尺寸，即 e_phentsize
-
-    ;这里稍微解释一下 因为0x70000 为 64kb * 7 = 448kb 而我们的内核映射区域是 4MB 而在虚拟地址4MB以内的都可以当作1:1映射
-    mov ebx,[KERNEL_BIN_BASE_ADDR+28]                           ; elf offset 28，程序头表的量
+    ret            
+    
+;----------------------- 初始化内核 把缓冲区的内核代码放到0x1500区域 ------------------------------------------
+;这个地方主要对elf文件头部分用的很多
+;可以参照着书上给的格式 来比较对比
+kernel_init:
+    xor eax,eax   ;全部清零
+    xor ebx,ebx
+    xor ecx,ecx
+    xor edx,edx
+    
+    ;这里稍微解释一下 因为0x70000 为64kb*7=448kb 而我们的内核映射区域是4MB 而在虚拟地址4MB以内的都可以当作1:1映射
+    mov ebx,[KERNEL_BIN_BASE_ADDR+28]
     add ebx,KERNEL_BIN_BASE_ADDR                               ;ebx当前位置为程序段表
-    mov dx,[KERNEL_BIN_BASE_ADDR+42]		                 ;获取程序段表每个条目描述符字节大小
+    mov dx,[KERNEL_BIN_BASE_ADDR+42]		         ;获取程序段表每个条目描述符字节大小
     mov cx,[KERNEL_BIN_BASE_ADDR+44]                         ;一共有几个段
     
      
  .get_each_segment:
-    cmp dword [ebx+0], PT_NULL                                  ; 这里没有程序段，可以忽略，定义在 Phdr (program header) 中
+    cmp dword [ebx+0],PT_NULL
     je .PTNULL                                                 ;空即跳转即可 不进行mem_cpy
     
     mov eax,[ebx+8]
@@ -298,90 +294,91 @@ mem_cpy:
     pop ecx 
     pop ebp
     ret
-
-
-
+    
+;------------------------ rd_disk_m_32  在mbr.S复制粘贴过来的 修改了点代码 ----------------------
 rd_disk_m_32:
-    ; ---
-    ; 读取磁盘 n 个扇区
-    ; ---
-    ; eax = lba 扇区号
-    ; bx = 数据要写入的内存地址
-    ; cx = 读入的扇区数
+;1 写入待操作磁盘数
+;2 写入LBA 低24位寄存器 确认扇区
+;3 device 寄存器 第4位主次盘 第6位LBA模式 改为1
+;4 command 写指令
+;5 读取status状态寄存器 判断是否完成工作
+;6 完成工作 取出数据
+ 
+ ;;;;;;;;;;;;;;;;;;;;;
+ ;1 写入待操作磁盘数
+ ;;;;;;;;;;;;;;;;;;;;;
+    mov esi,eax   ; !!! 备份eax
+    mov di,cx     ; !!! 备份cx
+    
+    mov dx,0x1F2  ; 0x1F2为Sector Count 端口号 送到dx寄存器中
+    mov al,cl     ; !!! 忘了只能由ax al传递数据
+    out dx,al     ; !!! 这里修改了 原out dx,cl
+    
+    mov eax,esi   ; !!!袄无! 原来备份是这个用 前面需要ax来传递数据 麻了
+    
+;;;;;;;;;;;;;;;;;;;;;
+;2 写入LBA 24位寄存器 确认扇区
+;;;;;;;;;;;;;;;;;;;;;
+    mov cl,0x8    ; shr 右移8位 把24位给送到 LBA low mid high 寄存器中
 
-    ; 备份
-    mov esi, eax
-    mov di, cx
+    mov dx,0x1F3  ; LBA low
+    out dx,al 
+    
+    mov dx,0x1F4  ; LBA mid
+    shr eax,cl    ; eax为32位 ax为16位 eax的低位字节 右移8位即8~15
+    out dx,al
+    
+    mov dx,0x1F5
+    shr eax,cl
+    out dx,al
+    
+;;;;;;;;;;;;;;;;;;;;;
+;3 device 寄存器 第4位主次盘 第6位LBA模式 改为1
+;;;;;;;;;;;;;;;;;;;;;
 
-    ; ---
-    ; 1. 设置要读取的扇区数
-    ; ---
+    		 
+    		  ; 24 25 26 27位 尽管我们知道ax只有2 但还是需要按规矩办事 
+    		  ; 把除了最后四位的其他位置设置成0
+    shr eax,cl
+    
+    and al,0x0f 
+    or al,0xe0   ;!!! 把第四-七位设置成0111 转换为LBA模式
+    mov dx,0x1F6 ; 参照硬盘控制器端口表 Device 
+    out dx,al
 
-    mov dx, 0x1f2   ; sector count 寄存器
-    mov al, cl      ; 待读入扇区数写入 ax
-    out dx, al      ; 读取的扇区数
+;;;;;;;;;;;;;;;;;;;;;
+;4 向Command写操作 Status和Command一个寄存器
+;;;;;;;;;;;;;;;;;;;;;
 
-    mov eax, esi    ; 恢复 ax
+    mov dx,0x1F7 ; Status寄存器端口号
+    mov ax,0x20  ; 0x20是读命令
+    out dx,al
+    
+;;;;;;;;;;;;;;;;;;;;;
+;5 向Status查看是否准备好惹 
+;;;;;;;;;;;;;;;;;;;;;
+    
+		   ;设置不断读取重复 如果不为1则一直循环
+  .not_ready:     
+    nop           ; !!! 空跳转指令 在循环中达到延时目的
+    in al,dx      ; 把寄存器中的信息返还出来
+    and al,0x88   ; !!! 0100 0100 0x88
+    cmp al,0x08
+    jne .not_ready ; !!! jump not equal == 0
+    
+    
+;;;;;;;;;;;;;;;;;;;;;
+;6 读取数据
+;;;;;;;;;;;;;;;;;;;;;
 
-    ; ---
-    ; 2. 将 LBA 地址存入 0x1f3 ~ 0x1f6
-    ; ---
-
-    ; LBA 地址 7~0 位写入端口 0x1f3
-    mov dx, 0x1f3   ; LBA low 寄存器
-    out dx, al
-
-    ; LBA 地址 15~8 位写入端口 0x1f4
-    mov cl, 8
-    shr eax, cl
-    mov dx, 0x1f4   ; LBA mid 寄存器
-    out dx, al
-
-    ; LBA 地址 23~16 位写入端口 0x1f5
-    shr eax, cl
-    mov dx, 0x1f5   ; LBA high 寄存器
-    out dx, al
-
-    ; LBA 地址 27~24 位写入端口 0x1f6
-    shr eax, cl
-
-    and al, 0x0f
-    or al, 0xe0     ; 7~4 位为 1110，表示 lba 模式
-    mov dx, 0x1f6   ; device 寄存器
-    out dx, al
-
-; ---
-; 3. 向 0x1f7 端口写入读命令:0x20
-; ---
-
-    mov dx, 0x1f7   ; Status 寄存器
-    mov al, 0x20    ; read sector 命令
-    out dx, al
-
-; ---
-; 4. 检测硬盘状态
-; ---
-
-.not_ready:
-    nop
-    in al, dx
-    and al, 0x88    ; 第三位=1表示硬盘控制器准备好数据传输，第七位=1表示硬盘繁忙
-    cmp al, 0x08
-    jnz .not_ready  ; 若没有准备好，继续等待
-
-; ---
-; 5. 从端口 0x1f0 读取数据
-; ---
-
-    mov ax, di      ; ax = 要读取的扇区数
-    mov dx, 256
-    mul dx
-    mov cx, ax
-    mov dx, 0x1f0
-
-.go_on_read:
-    in ax, dx
-    mov [ebx], ax
-    add ebx, 2
-    loop .go_on_read
-    ret
+    mov ax,di      ;把 di 储存的cx 取出来
+    mov dx,256
+    mul dx        ;与di 与 ax 做乘法 计算一共需要读多少次 方便作循环 低16位放ax 高16位放dx
+    mov cx,ax      ;loop 与 cx相匹配 cx-- 当cx == 0即跳出循环
+    mov dx,0x1F0
+ .go_read_loop:
+    in ax,dx      ;两字节dx 一次读两字
+    mov [ebx],ax
+    add ebx,2
+    loop .go_read_loop
+    ret ;与call 配对返回原来的位置 跳转到call下一条指令
