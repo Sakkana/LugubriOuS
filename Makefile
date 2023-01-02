@@ -16,12 +16,15 @@ RM = del
 DD = dd
 BOCHSRUN = bochsdbg.exe
 
-MBR = bin\\mbr.bin
-LOADER = bin\\loader.bin
-TARGET = img\\myOS.img
-CONFIG = config\\myOS.bxrc
+# binary files
+MBR 	= 	bin\\mbr.bin
+LOADER 	= 	bin\\loader.bin
+KERNEL 	= 	bin\\kernel.bin
+
+TARGET 	= img\\myOS.img
+CONFIG 	= config\\myOS.bxrc
 INCLUDE = src\\boot\\include\\
-BUILD = bin\*.bin
+BUILD 	= bin\mbr.bin bin\loader.bin
 BLOCKSIZE = bs
 
 os: clean build_asm write_disk run
@@ -30,13 +33,14 @@ build_asm:
 	$(NASM) $(NASM_HEADER) $(INCLUDE) -o $(MBR) src\\boot\\mbr.asm
 	$(NASM) $(NASM_HEADER) $(INCLUDE) -o $(LOADER) src\\boot\\loader.asm
 	
-# |-fin0- |-fin1-|-fin2-|-fin3-|
-# |  MBR  |      |   Loader    |	
-# |0x7c00 |		 |    0x900    |	
+# |-fin0- |-fin1-|-fin2-|-fin3-|-fin4-| ... |     9   |
+# |  MBR  |      |     Loader    	  |	    | kernel  |
+# |0x7c00 |		 |       0x900   	  |		|         |
 
 write_disk:
 	DD if=$(MBR) of=$(TARGET) $(BLOCKSIZE)=512 count=1 conv=notrunc
 	DD if=$(LOADER) of=$(TARGET) $(BLOCKSIZE)=512 count=3 seek=2 conv=notrunc
+	DD if=$(KERNEL) of=$(TARGET) $(BLOCKSIZE)=512 count=200 seek=9 conv=notrunc
 	
 run:
 	$(BOCHSRUN) -f $(CONFIG) -q
