@@ -36,7 +36,7 @@ build_asm:
 
 write_disk:
 	DD if=$(MBR) of=$(TARGET) $(BLOCKSIZE)=512 count=1 conv=notrunc
-	DD if=$(LOADER) of=$(TARGET) $(BLOCKSIZE)=512 count=2 seek=2 conv=notrunc
+	DD if=$(LOADER) of=$(TARGET) $(BLOCKSIZE)=512 count=3 seek=2 conv=notrunc
 	
 run:
 	$(BOCHSRUN) -f $(CONFIG) -q
@@ -44,4 +44,3 @@ run:
 .PHONY : clean
 clean:
 	$(RM) $(BUILD)
-	

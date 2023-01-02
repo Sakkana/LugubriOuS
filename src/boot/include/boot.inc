@@ -3,6 +3,7 @@ LOADER_BASE_ADDR equ 0x900      ; Loader 被加载到内存中的地址
 LOADER_START_SECTOR equ 0x2     ; 从第二个扇区读 Loader
 
 
+
 ; --- GDT 全局描述符表属性 ---
 DESC_G_4K equ 1000_0000_0000_0000_0000_0000b ; 第23位G 表示4K或者1MB位 段界限的单位值 此时为1则为4k 
 DESC_D_32 equ 100_0000_0000_0000_0000_0000b  ; 第22位D/B位 表示地址值用32位EIP寄存器 操作数与指令码32位
@@ -64,3 +65,12 @@ TI_GDT  equ 000b
 TI_LDT  equ 100b
 
 ; 第 3 - 15 位索引值
+
+; -- 页表相关数据 ---
+PAGE_DIR_TABLE_POS     equ    0x10_0000
+
+PG_P        equ    1b
+PG_RW_P     equ 00b
+PG_RW_W     equ 10b
+PG_US_S     equ 000b
+PG_US_U     equ 100b
