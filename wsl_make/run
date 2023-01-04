@@ -1,0 +1,1 @@
+bash remove && gcc -m32 -c ../src/kernel/main.c -o ./main.o && ld -m elf_i386 ./main.o -Ttext 0xc0001500 -e ludovico_main -o ./kernel.bin && mv kernel.bin ../bin

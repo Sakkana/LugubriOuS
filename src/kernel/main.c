@@ -1,4 +1,4 @@
-int main(void) {
-    while(1);
-    return 0;
+int ludovico_main() {
+	while(1);	
+	return 1;
 }
