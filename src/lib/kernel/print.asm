@@ -2,6 +2,9 @@ TI_GDT          equ     0
 RPL0            equ     0
 SELECTOR_VIDEO  equ     (0x0003 << 3) + TI_GDT + RPL0
 
+section .data
+put_int_buffer  dq      0   ; 8 字节缓冲区
+
 [bits 32]
 section .text
 
@@ -178,3 +181,69 @@ put_char:
     popad
     ret
 
+global put_int
+put_int:
+    pushad
+    mov ebp, esp
+    mov eax, [ebp + 4 * 9]  ; 8 个寄存器 + ra
+    mov edx, eax            ; 整数的编码
+
+    mov edi, 7              ; 缓冲中的初始 offset (小端编码)
+    mov ecx, 8              ; 32 位整数，8 byte
+    mov ebx, put_int_buffer
+
+    ; 十六进制的方式从低位到高位逐个处理
+    ; 共处理 8 个十六进制数字
+    .16based_4bits:
+        and edx, 0x0000000F     ; 低 4 位掩码
+        cmp edx, 9
+        jg .is_A2F              ; A ~ F
+
+    add edx, '0'
+    jmp .store
+
+    .is_A2F:
+        sub edx, 10
+        add edx, 'A'
+        jmp .store
+
+    .store:
+        ; ebx 是缓冲区的基址
+        ; edi 是下标
+        mov [ebx + edi], dl
+        dec edi
+        shr eax, 4
+        mov edx, eax
+        loop .16based_4bits
+
+    .ready_to_print:
+        inc edi     ; -1 + 1
+    
+    ; 全部都是 0
+    .skip_prefix_0:
+        cmp edi, 8
+        je .full0
+
+    ; 找出连续的前导 0
+    .go_on_skip:
+        mov cl, [put_int_buffer + edi]
+        inc edi
+        cmp cl, '0'
+        je .skip_prefix_0
+        dec edi
+        jmp .put_each_num
+
+    .full0:
+        mov cl, '0'
+
+    .put_each_num:
+        push ecx
+        call put_char
+        add esp, 4
+        inc edi
+        mov cl, [put_int_buffer + edi]
+        cmp edi, 8
+        jl .put_each_num
+        
+        popad
+        ret
