@@ -5,6 +5,37 @@ SELECTOR_VIDEO  equ     (0x0003 << 3) + TI_GDT + RPL0
 [bits 32]
 section .text
 
+; --- 实现 putstr 函数 ---
+; --- 将栈中以 \0 结尾的字符串打印出来 ---
+global put_str
+put_str:
+    ; 备份
+    push ebx
+    push ecx
+    
+    xor ecx, ecx
+    mov ebx, [esp + 12]     ; 获取字符串地址，栈中结构： str, ra, ebx, ecx
+
+    ; 循环处理
+    .goon:
+        mov cl, [ebx]
+        cmp cl, 0       ; 字符串结尾
+        jz .str_over
+        
+        push ecx
+        call put_char
+        add esp, 4      ; caller 回复现场
+        
+        inc ebx         ; 指向下一个字符
+        jmp .goon
+        
+    .str_over:
+        pop ecx
+        pop ebx
+        ret
+
+
+
 ; --- 实现 putchar 函数 ---
 ; --- 将栈中的一个字符打印到光标所在的位置 ---
 
@@ -38,6 +69,7 @@ put_char:
 
     ; 将光标存入 bx
     mov bx, ax
+    ;mov bx, 320
 
     ; 获取待打印的字符
     mov ecx, [esp + 36]     ; pushad 压入 4 x 8 = 32 byte + ra = 46 byte
