@@ -30,13 +30,13 @@
 00000000000i[     ]   SB16 support: yes
 00000000000i[     ]   USB support: yes
 00000000000i[     ]   VGA extension support: vbe cirrus
-00000000000i[MEM0 ] allocated memory at 0374C020. after alignment, vector=0374D000
+00000000000i[MEM0 ] allocated memory at 03768020. after alignment, vector=03769000
 00000000000i[MEM0 ] 32.00MB
 00000000000i[MEM0 ] mem block size = 0x00100000, blocks=32
 00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('E:\homwwork\DevelopTools\env\Bochs-2.4.5\BIOS-bochs-latest')
 00000000000i[MEM0 ] rom at 0xc0000/40448 ('E:\homwwork\DevelopTools\env\Bochs-2.4.5\VGABIOS-lgpl-latest')
 00000000000i[CMOS ] Using local time for initial clock
-00000000000i[CMOS ] Setting initial clock to: Thu Jan 05 19:30:08 2023 (time0=1672918208)
+00000000000i[CMOS ] Setting initial clock to: Fri Jan 06 19:21:13 2023 (time0=1673004073)
 00000000000i[DMA  ] channel 4 used by cascade
 00000000000i[DMA  ] channel 2 used by Floppy Drive
 00000000000i[PCI  ] 440FX Host bridge present at device 0, function 0
@@ -55,7 +55,6 @@
 00000000000i[     ] init_dev of 'speaker' plugin device by virtual method
 00000000000i[     ] init_dev of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] init_dev of 'gameport' plugin device by virtual method
-00000000000i[     ] init_dev of 'iodebug' plugin device by virtual method
 00000000000i[     ] init_dev of 'pci_ide' plugin device by virtual method
 00000000000i[PCI  ] PIIX3 PCI IDE controller present at device 1, function 1
 00000000000i[     ] init_dev of 'acpi' plugin device by virtual method
@@ -79,7 +78,6 @@
 00000000000i[     ] register state of 'speaker' plugin device by virtual method
 00000000000i[     ] register state of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] register state of 'gameport' plugin device by virtual method
-00000000000i[     ] register state of 'iodebug' plugin device by virtual method
 00000000000i[     ] register state of 'pci_ide' plugin device by virtual method
 00000000000i[     ] register state of 'acpi' plugin device by virtual method
 00000000000i[     ] register state of 'ioapic' plugin device by virtual method
@@ -108,7 +106,6 @@
 00000000000i[     ] reset of 'speaker' plugin device by virtual method
 00000000000i[     ] reset of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] reset of 'gameport' plugin device by virtual method
-00000000000i[     ] reset of 'iodebug' plugin device by virtual method
 00000000000i[     ] reset of 'pci_ide' plugin device by virtual method
 00000000000i[     ] reset of 'acpi' plugin device by virtual method
 00000000000i[     ] reset of 'ioapic' plugin device by virtual method
@@ -116,7 +113,6 @@
 00000000000i[     ] reset of 'harddrv' plugin device by virtual method
 00000000000i[     ] reset of 'serial' plugin device by virtual method
 00000000000i[     ] reset of 'parallel' plugin device by virtual method
-00000000000i[     ] set SIGINT handler to bx_debug_ctrlc_handler
 00000003305i[BIOS ] $Revision: 1.247 $ $Date: 2010/04/04 19:33:50 $
 00000200000i[WGUI ] dimension update x=720 y=400 fontheight=16 fontwidth=9 bpp=8
 00000318057i[KBD  ] reset-disable command received
@@ -161,32 +157,36 @@
 00001864596i[BIOS ] ata0-0: PCHS=121/16/63 translation=none LCHS=121/16/63
 00005744856i[BIOS ] IDE time out
 00017825013i[BIOS ] Booting from 0000:7c00
-00094600000p[WGUI ] >>PANIC<< POWER button turned off.
-00094600000i[CPU0 ] CPU is in protected mode (active)
-00094600000i[CPU0 ] CS.d_b = 32 bit
-00094600000i[CPU0 ] SS.d_b = 32 bit
-00094600000i[CPU0 ] EFER   = 0x00000000
-00094600000i[CPU0 ] | RAX=0000000000000000  RBX=00000000000700d4
-00094600000i[CPU0 ] | RCX=0000000000000000  RDX=0000000000000020
-00094600000i[CPU0 ] | RSP=00000000c009efe4  RBP=00000000c009effc
-00094600000i[CPU0 ] | RSI=000000000007101c  RDI=00000000c000301c
-00094600000i[CPU0 ] |  R8=0000000000000000   R9=0000000000000000
-00094600000i[CPU0 ] | R10=0000000000000000  R11=0000000000000000
-00094600000i[CPU0 ] | R12=0000000000000000  R13=0000000000000000
-00094600000i[CPU0 ] | R14=0000000000000000  R15=0000000000000000
-00094600000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf zf AF PF cf
-00094600000i[CPU0 ] | SEG selector     base    limit G D
-00094600000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-00094600000i[CPU0 ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-00094600000i[CPU0 ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00094600000i[CPU0 ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00094600000i[CPU0 ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00094600000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00094600000i[CPU0 ] |  GS:0018( 0003| 0|  0) c00b8000 00007fff 1 1
-00094600000i[CPU0 ] |  MSR_FS_BASE:0000000000000000
-00094600000i[CPU0 ] |  MSR_GS_BASE:00000000c00b8000
-00094600000i[CPU0 ] | RIP=00000000c00015ba (00000000c00015ba)
-00094600000i[CPU0 ] | CR0=0xe0000011 CR2=0x0000000000000000
-00094600000i[CPU0 ] | CR3=0x00100000 CR4=0x00000000
-00094600000i[CMOS ] Last time is 1672918231 (Thu Jan 05 19:30:31 2023)
-00094600000i[CTRL ] quit_sim called with exit code 1
+00018239959i[CPU0 ] LOCK prefix unallowed (op1=0x53, attr=0x0, mod=0x0, nnn=0)
+00018242086i[CPU0 ] LOCK prefix unallowed (op1=0x53, attr=0x0, mod=0x0, nnn=0)
+00031000000p[WGUI ] >>PANIC<< POWER button turned off.
+00031000000i[CPU0 ] CPU is in protected mode (active)
+00031000000i[CPU0 ] CS.d_b = 32 bit
+00031000000i[CPU0 ] SS.d_b = 32 bit
+00031000000i[CPU0 ] EFER   = 0x00000000
+00031000000i[CPU0 ] | RAX=00000000c0000018  RBX=00000000c00007d0
+00031000000i[CPU0 ] | RCX=000000000000013a  RDX=0000000000000010
+00031000000i[CPU0 ] | RSP=00000000c009ef9c  RBP=00000000c009effc
+00031000000i[CPU0 ] | RSI=00000000c00b8ab8  RDI=00000000c00b8a18
+00031000000i[CPU0 ] |  R8=0000000000000000   R9=0000000000000000
+00031000000i[CPU0 ] | R10=0000000000000000  R11=0000000000000000
+00031000000i[CPU0 ] | R12=0000000000000000  R13=0000000000000000
+00031000000i[CPU0 ] | R14=0000000000000000  R15=0000000000000000
+00031000000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
+00031000000i[CPU0 ] | SEG selector     base    limit G D
+00031000000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
+00031000000i[CPU0 ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+00031000000i[CPU0 ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00031000000i[CPU0 ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00031000000i[CPU0 ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00031000000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
+00031000000i[CPU0 ] |  GS:0018( 0003| 0|  0) c00b8000 00007fff 1 1
+00031000000i[CPU0 ] |  MSR_FS_BASE:0000000000000000
+00031000000i[CPU0 ] |  MSR_GS_BASE:00000000c00b8000
+00031000000i[CPU0 ] | RIP=00000000c0001834 (00000000c0001832)
+00031000000i[CPU0 ] | CR0=0xe0000011 CR2=0x0000000000000000
+00031000000i[CPU0 ] | CR3=0x00100000 CR4=0x00000000
+00031000000i[CPU0 ] 0x00000000c0001832>> rep movsd dword ptr es:[edi], dword ptr ds:[esi] : F3A5
+00031000000i[CMOS ] Last time is 1673004080 (Fri Jan 06 19:21:20 2023)
+00031000000i[     ] restoring default signal behavior
+00031000000i[CTRL ] quit_sim called with exit code 1
