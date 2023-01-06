@@ -30,13 +30,13 @@
 00000000000i[     ]   SB16 support: yes
 00000000000i[     ]   USB support: yes
 00000000000i[     ]   VGA extension support: vbe cirrus
-00000000000i[MEM0 ] allocated memory at 03768020. after alignment, vector=03769000
+00000000000i[MEM0 ] allocated memory at 036FC020. after alignment, vector=036FD000
 00000000000i[MEM0 ] 32.00MB
 00000000000i[MEM0 ] mem block size = 0x00100000, blocks=32
 00000000000i[MEM0 ] rom at 0xfffe0000/131072 ('E:\homwwork\DevelopTools\env\Bochs-2.4.5\BIOS-bochs-latest')
 00000000000i[MEM0 ] rom at 0xc0000/40448 ('E:\homwwork\DevelopTools\env\Bochs-2.4.5\VGABIOS-lgpl-latest')
 00000000000i[CMOS ] Using local time for initial clock
-00000000000i[CMOS ] Setting initial clock to: Fri Jan 06 19:21:13 2023 (time0=1673004073)
+00000000000i[CMOS ] Setting initial clock to: Fri Jan 06 21:19:09 2023 (time0=1673011149)
 00000000000i[DMA  ] channel 4 used by cascade
 00000000000i[DMA  ] channel 2 used by Floppy Drive
 00000000000i[PCI  ] 440FX Host bridge present at device 0, function 0
@@ -55,6 +55,7 @@
 00000000000i[     ] init_dev of 'speaker' plugin device by virtual method
 00000000000i[     ] init_dev of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] init_dev of 'gameport' plugin device by virtual method
+00000000000i[     ] init_dev of 'iodebug' plugin device by virtual method
 00000000000i[     ] init_dev of 'pci_ide' plugin device by virtual method
 00000000000i[PCI  ] PIIX3 PCI IDE controller present at device 1, function 1
 00000000000i[     ] init_dev of 'acpi' plugin device by virtual method
@@ -78,6 +79,7 @@
 00000000000i[     ] register state of 'speaker' plugin device by virtual method
 00000000000i[     ] register state of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] register state of 'gameport' plugin device by virtual method
+00000000000i[     ] register state of 'iodebug' plugin device by virtual method
 00000000000i[     ] register state of 'pci_ide' plugin device by virtual method
 00000000000i[     ] register state of 'acpi' plugin device by virtual method
 00000000000i[     ] register state of 'ioapic' plugin device by virtual method
@@ -106,6 +108,7 @@
 00000000000i[     ] reset of 'speaker' plugin device by virtual method
 00000000000i[     ] reset of 'extfpuirq' plugin device by virtual method
 00000000000i[     ] reset of 'gameport' plugin device by virtual method
+00000000000i[     ] reset of 'iodebug' plugin device by virtual method
 00000000000i[     ] reset of 'pci_ide' plugin device by virtual method
 00000000000i[     ] reset of 'acpi' plugin device by virtual method
 00000000000i[     ] reset of 'ioapic' plugin device by virtual method
@@ -113,6 +116,7 @@
 00000000000i[     ] reset of 'harddrv' plugin device by virtual method
 00000000000i[     ] reset of 'serial' plugin device by virtual method
 00000000000i[     ] reset of 'parallel' plugin device by virtual method
+00000000000i[     ] set SIGINT handler to bx_debug_ctrlc_handler
 00000003305i[BIOS ] $Revision: 1.247 $ $Date: 2010/04/04 19:33:50 $
 00000200000i[WGUI ] dimension update x=720 y=400 fontheight=16 fontwidth=9 bpp=8
 00000318057i[KBD  ] reset-disable command received
@@ -155,38 +159,204 @@
 00001851285i[PCI  ] 440FX PMC write to PAM register 59 (TLB Flush)
 00001852129i[BIOS ] bios_table_cur_addr: 0x000fbe44
 00001864596i[BIOS ] ata0-0: PCHS=121/16/63 translation=none LCHS=121/16/63
-00005744856i[BIOS ] IDE time out
+00005745094i[BIOS ] IDE time out
 00017825013i[BIOS ] Booting from 0000:7c00
-00018239959i[CPU0 ] LOCK prefix unallowed (op1=0x53, attr=0x0, mod=0x0, nnn=0)
-00018242086i[CPU0 ] LOCK prefix unallowed (op1=0x53, attr=0x0, mod=0x0, nnn=0)
-00031000000p[WGUI ] >>PANIC<< POWER button turned off.
-00031000000i[CPU0 ] CPU is in protected mode (active)
-00031000000i[CPU0 ] CS.d_b = 32 bit
-00031000000i[CPU0 ] SS.d_b = 32 bit
-00031000000i[CPU0 ] EFER   = 0x00000000
-00031000000i[CPU0 ] | RAX=00000000c0000018  RBX=00000000c00007d0
-00031000000i[CPU0 ] | RCX=000000000000013a  RDX=0000000000000010
-00031000000i[CPU0 ] | RSP=00000000c009ef9c  RBP=00000000c009effc
-00031000000i[CPU0 ] | RSI=00000000c00b8ab8  RDI=00000000c00b8a18
-00031000000i[CPU0 ] |  R8=0000000000000000   R9=0000000000000000
-00031000000i[CPU0 ] | R10=0000000000000000  R11=0000000000000000
-00031000000i[CPU0 ] | R12=0000000000000000  R13=0000000000000000
-00031000000i[CPU0 ] | R14=0000000000000000  R15=0000000000000000
-00031000000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf ZF af PF cf
-00031000000i[CPU0 ] | SEG selector     base    limit G D
-00031000000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
-00031000000i[CPU0 ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
-00031000000i[CPU0 ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00031000000i[CPU0 ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00031000000i[CPU0 ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
-00031000000i[CPU0 ] |  FS:0000( 0005| 0|  0) 00000000 0000ffff 0 0
-00031000000i[CPU0 ] |  GS:0018( 0003| 0|  0) c00b8000 00007fff 1 1
-00031000000i[CPU0 ] |  MSR_FS_BASE:0000000000000000
-00031000000i[CPU0 ] |  MSR_GS_BASE:00000000c00b8000
-00031000000i[CPU0 ] | RIP=00000000c0001834 (00000000c0001832)
-00031000000i[CPU0 ] | CR0=0xe0000011 CR2=0x0000000000000000
-00031000000i[CPU0 ] | CR3=0x00100000 CR4=0x00000000
-00031000000i[CPU0 ] 0x00000000c0001832>> rep movsd dword ptr es:[edi], dword ptr ds:[esi] : F3A5
-00031000000i[CMOS ] Last time is 1673004080 (Fri Jan 06 19:21:20 2023)
-00031000000i[     ] restoring default signal behavior
-00031000000i[CTRL ] quit_sim called with exit code 1
+00018333285e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00018741705e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00018800422e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00018859139e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00018917856e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00018976573e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00019035290e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00019094007e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00019152724e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00019211441e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00019760681e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00020169101e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00020577521e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00020985941e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021044658e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021103375e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021162092e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021220809e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021279526e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021338243e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021396960e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021455677e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021514394e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021573111e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021631828e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021690545e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021749262e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021807979e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021866696e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021925413e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00021984130e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022042847e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022101564e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022160281e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022218998e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022277715e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022336432e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022395149e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022453866e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022512583e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022571300e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022630017e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022688734e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022747451e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022806168e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022864885e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022923602e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00022982319e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00023041036e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00023099753e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00023648993e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00024057413e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00024465833e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00024874253e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00024932970e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00024991687e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025050404e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025109121e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025167838e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025226555e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025285272e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025343989e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025402706e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025461423e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025520140e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025578857e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025637574e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025696291e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025755008e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025813725e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025872442e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025931159e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00025989876e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026048593e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026107310e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026166027e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026224744e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026283461e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026342178e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026400895e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026459612e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026518329e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026577046e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026635763e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026694480e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026753197e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026811914e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026870631e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026929348e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00026988065e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00027537305e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00027945725e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00028354145e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00028762565e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00028821282e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00028879999e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00028938716e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00028997433e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029056150e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029114867e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029173584e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029232301e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029291018e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029349735e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029408452e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029467169e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029525886e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029584603e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029643320e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029702037e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029760754e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029819471e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029878188e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029936905e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00029995622e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030054339e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030113056e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030171773e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030230490e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030289207e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030347924e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030406641e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030465358e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030524075e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030582792e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030641509e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030700226e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030758943e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030817660e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00030876377e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00031425617e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00031834037e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00032242457e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00032650877e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00032709594e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00032768311e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00032827028e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00032885745e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00032944462e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033003179e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033061896e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033120613e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033179330e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033238047e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033296764e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033355481e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033414198e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033472915e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033531632e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033590349e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033649066e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033707783e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033766500e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033825217e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033883934e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00033942651e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034001368e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034060085e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034118802e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034177519e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034236236e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034294953e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034353670e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034412387e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034471104e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034529821e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034588538e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034647255e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034705972e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00034764689e[CPU0 ] interrupt(): vector must be within IDT table limits, IDT.limit = 0x107
+00035248000p[WGUI ] >>PANIC<< POWER button turned off.
+00035248000i[CPU0 ] CPU is in protected mode (active)
+00035248000i[CPU0 ] CS.d_b = 32 bit
+00035248000i[CPU0 ] SS.d_b = 32 bit
+00035248000i[CPU0 ] EFER   = 0x00000000
+00035248000i[CPU0 ] | RAX=0000000000000018  RBX=0000000000000f26
+00035248000i[CPU0 ] | RCX=000000000000003e  RDX=0000000000000011
+00035248000i[CPU0 ] | RSP=00000000c009ef5c  RBP=00000000c009efa8
+00035248000i[CPU0 ] | RSI=00000000c00b8fa0  RDI=00000000c00b8f00
+00035248000i[CPU0 ] |  R8=0000000000000000   R9=0000000000000000
+00035248000i[CPU0 ] | R10=0000000000000000  R11=0000000000000000
+00035248000i[CPU0 ] | R12=0000000000000000  R13=0000000000000000
+00035248000i[CPU0 ] | R14=0000000000000000  R15=0000000000000000
+00035248000i[CPU0 ] | IOPL=0 id vip vif ac vm rf nt of df if tf sf zf af pf cf
+00035248000i[CPU0 ] | SEG selector     base    limit G D
+00035248000i[CPU0 ] | SEG sltr(index|ti|rpl)     base    limit G D
+00035248000i[CPU0 ] |  CS:0008( 0001| 0|  0) 00000000 ffffffff 1 1
+00035248000i[CPU0 ] |  DS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00035248000i[CPU0 ] |  SS:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00035248000i[CPU0 ] |  ES:0010( 0002| 0|  0) 00000000 ffffffff 1 1
+00035248000i[CPU0 ] |  FS:0000( 0000| 0|  0) 00000000 00000000 0 0
+00035248000i[CPU0 ] |  GS:0018( 0003| 0|  0) c00b8000 00007fff 1 1
+00035248000i[CPU0 ] |  MSR_FS_BASE:0000000000000000
+00035248000i[CPU0 ] |  MSR_GS_BASE:00000000c00b8000
+00035248000i[CPU0 ] | RIP=00000000c0001aaa (00000000c0001aaa)
+00035248000i[CPU0 ] | CR0=0xe0000011 CR2=0x0000000000000000
+00035248000i[CPU0 ] | CR3=0x00100000 CR4=0x00000000
+00035248000i[CMOS ] Last time is 1673011157 (Fri Jan 06 21:19:17 2023)
+00035248000i[CTRL ] quit_sim called with exit code 1
