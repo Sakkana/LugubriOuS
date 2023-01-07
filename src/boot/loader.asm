@@ -18,12 +18,12 @@ jmp loader_start                     		   	   ;下面存放数据段 构建gdt �
     GDT_SIZE              equ $ - GDT_BASE               ;当前位置减去GDT_BASE的地址 等于GDT的大小
     GDT_LIMIT       	   equ GDT_SIZE - 1   	           ;SIZE - 1即为最大偏移量
     
-    times 59 dq 0                             	   ;预留59个 define double四字型 8字描述符
-    times 5 db 0                                         ;为了凑整数 0x800 导致前面少了三个
+    times 59 dq 0                             	         ;预留59个 define double四字型 8字描述符
+    times 5 db 0                                         ;为了凑整数 0xb00 导致前面少了三个
     
     total_mem_bytes  dd 0
     	               			           ;在此前经过计算程序内偏移量为0x200 我算了算 60*8+4*8=512 刚好是 0x200 说这里的之后还会用到
-    							   ;我们刚开始程序设置的地址位置为 0x600 那这就是0x800
+    							   ;我们刚开始程序设置的地址位置为 0x900 那这就是0xb00
  
     
     gdt_ptr           dw GDT_LIMIT			   ;gdt指针 2字gdt界限放在前面 4字gdt地址放在后面 lgdt 48位格式 低位16位界限 高位32位起始地址
